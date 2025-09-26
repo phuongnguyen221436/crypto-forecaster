@@ -1,0 +1,9 @@
+websockets
+redis
+duckdb
+fastapi
+uvicorn
+streamlit
+prometheus_client
+pandas
+matplotlib
