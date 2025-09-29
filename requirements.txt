@@ -7,3 +7,6 @@ streamlit
 prometheus_client
 pandas
 matplotlib
+pytest
+pytest-asyncio
+httpx

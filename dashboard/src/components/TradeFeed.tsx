@@ -29,6 +29,7 @@ const TradeFeed = ({ symbol, trades, status }: TradeFeedProps) => {
           return (
             <div
               key={trade.id}
+              data-testid="trade-row"
               className={`flex items-center justify-between rounded-xl border border-slate-800 px-4 py-3 text-sm ${sideColor}`}
             >
               <div className="flex flex-col">

@@ -36,22 +36,18 @@ async def websocket_trades(websocket: WebSocket):
           else:
             prob_up, prob_down = 0.5, 0.5
           
-          forecast = {
-            "ts": ts,
-            "ofi": ofi,
-            "prob_up": prob_up,
-            "prob_down": prob_down,
-          }
-
           payload = {
             "id": message_id,
             "ts": int(fields.get("ts", 0)),
             "price": float(fields.get("price", 0)),
             "qty": float(fields.get("qty", 0)),
             "side": fields.get("side", "buy"),
+            "ofi": ofi,
+            "prob_up": prob_up,
+            "prob_down": prob_down,
           }
 
-          await websocket.send_text(json.dumps(forecast)) # send the trade event as a JSON string to the client
+          await websocket.send_text(json.dumps(payload)) # send the trade event as a JSON string to the client
           last_id = message_id  # update last_id to the ID of the last processed message
   except WebSocketDisconnect:
     return
