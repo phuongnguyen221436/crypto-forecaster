@@ -62,7 +62,10 @@ def test_websocket_emits_normalized_payload(service_client):
     # allow extra enrichment fields while ensuring numeric types
     if "prob_up" in message:
         assert isinstance(message["prob_up"], (int, float))
+        assert 0.0 <= message["prob_up"] <= 1.0
     if "prob_down" in message:
         assert isinstance(message["prob_down"], (int, float))
+        assert 0.0 <= message["prob_down"] <= 1.0
     if "ofi" in message:
         assert isinstance(message["ofi"], (int, float))
+    assert message.get("predictor") in {"model", "heuristic"}

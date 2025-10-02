@@ -15,6 +15,7 @@ Key coverage:
 - `tests/test_ingest.py` validates `normalize_trade` and ensures the DuckDB schema is created without touching external services.
 - `tests/test_replay.py` confirms `ingest/replay.py` streams stringified events to Redis.
 - `tests/test_service.py` spins up the FastAPI app with a fake Redis client and verifies that the `/ws/trades` websocket yields normalized payloads.
+- `tests/test_processor.py` covers feature engineering helpers and the baseline training routine.
 
 All external dependencies (Redis, DuckDB connections) are faked, so the suite runs offline.
 

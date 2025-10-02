@@ -10,3 +10,6 @@ matplotlib
 pytest
 pytest-asyncio
 httpx
+numpy
+scikit-learn
+joblib

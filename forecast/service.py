@@ -4,10 +4,13 @@ import asyncio
 import redis
 import json
 
+from processor.predictor import PriceDirectionPredictor
+
 app = FastAPI()
 
 # connect to redis
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)
+predictor = PriceDirectionPredictor()
 
 @app.websocket("/ws/trades") # define a websocket endpoint at /ws/trades
 async def websocket_trades(websocket: WebSocket):
@@ -26,25 +29,27 @@ async def websocket_trades(websocket: WebSocket):
       for stream, messages in events:
         for message_id, fields in messages:
           ts = int(fields.get("ts", 0))
+          raw_qty = float(fields.get("qty", 0))
+          side = fields.get("side", "buy")
+          price = float(fields.get("price", 0))
           ofi = float(fields.get("ofi", 0))
-          # send the trade event to the client
+          if ofi == 0:
+            ofi = raw_qty if side == "buy" else -raw_qty
 
-          if ofi > 0.2:
-            prob_up, prob_down = 0.7, 0.3
-          elif ofi < -0.2:
-            prob_up, prob_down = 0.3, 0.7
-          else:
-            prob_up, prob_down = 0.5, 0.5
-          
+          prob_up, prob_down, source = predictor.predict(
+            {"qty": raw_qty, "side": side, "price": price, "ofi": ofi}
+          )
+
           payload = {
             "id": message_id,
-            "ts": int(fields.get("ts", 0)),
-            "price": float(fields.get("price", 0)),
-            "qty": float(fields.get("qty", 0)),
-            "side": fields.get("side", "buy"),
+            "ts": ts,
+            "price": price,
+            "qty": raw_qty,
+            "side": side,
             "ofi": ofi,
             "prob_up": prob_up,
             "prob_down": prob_down,
+            "predictor": source,
           }
 
           await websocket.send_text(json.dumps(payload)) # send the trade event as a JSON string to the client
